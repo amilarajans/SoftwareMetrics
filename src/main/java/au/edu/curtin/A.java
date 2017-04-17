@@ -17,14 +17,14 @@ public class A {
 	}
 
 	public void method2(int x) {
-		method3();
+		method3("s");
 	}
 
 	public void method2(int x, double y) {
-		method3();
+		method3("S");
 	}
 
-	public void method3() {
+	public void method3(String s) {
 
 	}
 }

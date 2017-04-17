@@ -152,9 +152,14 @@ public class Program {
 	}
 
 	private static String getReadableSignature(String signature) {
-		return "(" + signature.chars()
-				.mapToObj(x -> (char) x)
-				.map(map::get).collect(Collectors.joining(", ")) + ")";
+		if (signature.startsWith("L")) {
+			String[] split = signature.split("/");
+			return "(" + split[split.length - 1].replace(";", "") + ")";
+		} else {
+			return "(" + signature.chars()
+					.mapToObj(x -> (char) x)
+					.map(map::get).collect(Collectors.joining(", ")) + ")";
+		}
 	}
 
 	private static String getConstructorInstructions(String line, String currentInstruction) {
