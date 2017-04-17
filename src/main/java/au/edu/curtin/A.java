@@ -12,10 +12,15 @@ public class A {
 	}
 
 	public void method1() {
-		this.method2();
+		this.method2(10);
+		this.method2(10, 12.6);
 	}
 
-	public void method2() {
+	public void method2(int x) {
+		method3();
+	}
+
+	public void method2(int x, double y) {
 		method3();
 	}
 
