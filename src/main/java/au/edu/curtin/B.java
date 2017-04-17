@@ -6,7 +6,7 @@ package au.edu.curtin;
  * 18296839
  */
 public class B {
-	public B() {
+	public B(long l) {
 		this.method1();
 	}
 
@@ -15,6 +15,6 @@ public class B {
 	}
 
 	public void method2() {
-
+		new C();
 	}
 }

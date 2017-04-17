@@ -8,7 +8,7 @@ package au.edu.curtin;
 public class A {
 	public A() {
 		this.method1();
-		new B();
+		new B(10l);
 	}
 
 	public void method1() {
