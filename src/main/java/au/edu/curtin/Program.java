@@ -45,9 +45,7 @@ public class Program {
 	protected static boolean isConstructor = false;
 	protected static boolean isMethod = false;
 	protected static boolean isFirstMethod = false;
-	//	protected static boolean isMethodExecuted = false;
 	protected static String previouslyPrinted = "";
-	protected static String lastExcutedMethod = "";
 	protected static HashMap<Character, String> map;
 	protected static List<String> methodStack;
 	protected static Stack<String> executionMethodStack;
@@ -121,8 +119,6 @@ public class Program {
 					if (isMethod && localMethodName.equals(SUPER_CLASS + "." + method) && !isRunning) {
 						isRunning = true;
 						isFirstMethod = true;
-//						isMethodExecuted = true;
-						lastExcutedMethod = method;
 					}
 					currentInstruction += method;
 				}
@@ -165,12 +161,6 @@ public class Program {
 			}
 			String method = matcher.group(3) + getReadableSignature(matcher.group(4).replaceAll(METHOD_PARAMS, ""));
 			currentInstruction += method;
-			if (isFirstMethod || lastExcutedMethod.equals(method)) {
-//				isMethodExecuted = true;
-				lastExcutedMethod = method;
-			} else {
-//				isMethodExecuted = false;
-			}
 		}
 		return currentInstruction;
 	}
