@@ -3,7 +3,10 @@ package au.edu.curtin;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -42,8 +45,12 @@ public class Program {
 	protected static boolean isConstructor = false;
 	protected static boolean isMethod = false;
 	protected static boolean isFirstMethod = false;
+	//	protected static boolean isMethodExecuted = false;
 	protected static String previouslyPrinted = "";
+	protected static String lastExcutedMethod = "";
 	protected static HashMap<Character, String> map;
+	protected static List<String> methodStack;
+	protected static Stack<String> executionMethodStack;
 
 	protected Program() {
 		//protected constructor to limit object creation
@@ -63,6 +70,8 @@ public class Program {
 			isConstructor = true;
 		}
 
+		methodStack = new ArrayList<>();
+		executionMethodStack = new Stack<>();
 		initializeByteCodeInstructions();
 
 		try {
@@ -87,7 +96,7 @@ public class Program {
 		map.put('I', "int");
 		map.put('J', "long");
 		map.put('S', "short");
-		map.put('V', "void");
+//		map.put('V', "void");
 		map.put('Z', "boolean");
 	}
 
@@ -108,11 +117,14 @@ public class Program {
 				Matcher matcher = pattern.matcher(line);
 				String localMethodName = currentInstruction + METHOD_NAME;
 				if (matcher.matches()) {
-					if (isMethod && localMethodName.equals(SUPER_CLASS + "." + matcher.group(2)) && !isRunning) {
+					String method = matcher.group(2);
+					if (isMethod && localMethodName.equals(SUPER_CLASS + "." + method) && !isRunning) {
 						isRunning = true;
 						isFirstMethod = true;
+//						isMethodExecuted = true;
+						lastExcutedMethod = method;
 					}
-					currentInstruction += matcher.group(2);
+					currentInstruction += method;
 				}
 			} else if (isFirstMethod && (line.contains(NON_STATIC_METHODS) || line.contains(STATIC_METHODS) || line.contains(NON_STATIC_METHODS_INTERFACE))) {
 				currentInstruction = getMethodInstructions(line, currentInstruction);
@@ -131,9 +143,14 @@ public class Program {
 		}
 
 		if (isRunning) {
-			if (!currentInstruction.isEmpty() && !previouslyPrinted.equals(currentInstruction)) {
+			if (!currentInstruction.isEmpty() && !previouslyPrinted.equals(currentInstruction)) { //&& isMethodExecuted) {
 				previouslyPrinted = currentInstruction;
-				System.out.println(currentInstruction);
+				if (methodStack.contains(currentInstruction)) {
+					System.out.println(currentInstruction + "[recursive]");
+				} else {
+					System.out.println(currentInstruction);
+				}
+				methodStack.add(previouslyPrinted);
 			}
 		}
 
@@ -146,7 +163,14 @@ public class Program {
 			if (isMethod && METHOD_NAME.equals(matcher.group(3)) && !isRunning) {
 				isRunning = true;
 			}
-			currentInstruction += matcher.group(3) + getReadableSignature(matcher.group(4).replaceAll(METHOD_PARAMS, ""));
+			String method = matcher.group(3) + getReadableSignature(matcher.group(4).replaceAll(METHOD_PARAMS, ""));
+			currentInstruction += method;
+			if (isFirstMethod || lastExcutedMethod.equals(method)) {
+//				isMethodExecuted = true;
+				lastExcutedMethod = method;
+			} else {
+//				isMethodExecuted = false;
+			}
 		}
 		return currentInstruction;
 	}
