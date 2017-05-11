@@ -24,8 +24,9 @@ public class Program {
 	private static String FILE_NAME;
 	private static String SUPER_CLASS;
 	protected final static String BASE_PACKAGE = "au/edu/curtin/";
+	protected final static String OBJECT_PACKAGE = ".java/lang/Object";
 	protected final static String CLASS_FILE_EXTENSION = ".class";
-	protected final static String METHOD_PARAMS = "[:V()]";
+	protected final static String METHOD_PARAMS = "[.:V()]";
 	protected final static String CONSTRUCTOR_PARAMS = "[.<>int:V\"()]";
 
 	//JVM instructions
@@ -45,6 +46,7 @@ public class Program {
 	protected static boolean isConstructor = false;
 	protected static boolean isMethod = false;
 	protected static boolean isFirstMethod = false;
+	protected static boolean isAbstractMethod = false;
 	protected static String previouslyPrinted = "";
 	protected static HashMap<Character, String> map;
 	protected static List<String> methodStack;
@@ -83,6 +85,8 @@ public class Program {
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
+
+		executionMethodStack.stream().forEach(System.out::println);
 	}
 
 	private void initializeByteCodeInstructions() {
@@ -94,7 +98,8 @@ public class Program {
 		map.put('I', "int");
 		map.put('J', "long");
 		map.put('S', "short");
-//		map.put('V', "void");
+		//no need to keep void
+		map.put('V', "void");
 		map.put('Z', "boolean");
 	}
 
@@ -139,12 +144,19 @@ public class Program {
 		}
 
 		if (isRunning) {
-			if (!currentInstruction.isEmpty() && !previouslyPrinted.equals(currentInstruction)) { //&& isMethodExecuted) {
+			if (!currentInstruction.isEmpty() && !previouslyPrinted.equals(currentInstruction)) {
 				previouslyPrinted = currentInstruction;
 				if (methodStack.contains(currentInstruction)) {
 					System.out.println(currentInstruction + "[recursive]");
+				} else if (isAbstractMethod) {
+					System.out.println(currentInstruction + "[abstract]");
 				} else {
-					System.out.println(currentInstruction);
+					if (currentInstruction.contains(OBJECT_PACKAGE)) {
+						System.out.println(currentInstruction.replace(OBJECT_PACKAGE, " constructor"));
+						System.out.println("Object constructor()");
+					} else {
+						System.out.println(currentInstruction);
+					}
 				}
 				methodStack.add(previouslyPrinted);
 			}
@@ -159,7 +171,16 @@ public class Program {
 			if (isMethod && METHOD_NAME.equals(matcher.group(3)) && !isRunning) {
 				isRunning = true;
 			}
-			String method = matcher.group(3) + getReadableSignature(matcher.group(4).replaceAll(METHOD_PARAMS, ""));
+			String method;
+			String group = matcher.group(4);
+			if (group.startsWith(".")) {
+				String[] methodSplit = group.replace(".", "").split(":");
+				method = methodSplit[0] + getReadableSignature(methodSplit[1].replaceAll(METHOD_PARAMS, ""));
+				isAbstractMethod = true;
+			} else {
+				method = matcher.group(3) + getReadableSignature(group.replaceAll(METHOD_PARAMS, ""));
+				isAbstractMethod = false;
+			}
 			currentInstruction += method;
 		}
 		return currentInstruction;

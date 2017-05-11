@@ -5,16 +5,18 @@ package au.edu.curtin;
  *         IT12351114
  *         18296839
  */
-public class B {
-	public B(long l) {
-		this.method1();
+public class Abstract {
+	public Abstract() {
+
 	}
 
 	public void method1() {
-		this.method2();
+		method2();
 	}
 
 	public void method2() {
-		new C();
+		AbstractClass aClass = new AbstractClassImpl();
+		aClass.abstractMethod1();
 	}
+
 }

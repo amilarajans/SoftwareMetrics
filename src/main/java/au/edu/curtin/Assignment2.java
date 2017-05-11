@@ -10,7 +10,7 @@ public class Assignment2 {
 		args = new String[3];
 		args[0] = "D:\\dev\\Projects\\SoftwareMetrics\\src\\main\\java\\au\\edu\\curtin\\";
 		args[1] = "A.class";
-		args[2] = "method1()";
+		args[2] = "";
 
 		if (args.length >= 2) {
 			new Program(args[0], args[1], args[2], true);
