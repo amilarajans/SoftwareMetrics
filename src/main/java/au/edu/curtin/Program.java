@@ -53,6 +53,7 @@ public class Program {
 	protected static HashMap<Character, String> map;
 	protected static List<String> methodStack;
 	protected static Stack<String> executionMethodStack;
+	protected static int tabPosision = 0;
 
 	protected Program() {
 		//protected constructor to limit object creation
@@ -109,12 +110,14 @@ public class Program {
 
 		if (isNextClass) {
 			isNextClass = false;
+			Assignment2.totalClass++;
 			new Program(BASE_PATH, nextClass, "", false);
 		}
 
 		//change the file name to parent class if it contains pop
 		if (line.contains(RETURN_TO_PARENT)) {
 			FILE_NAME = SUPER_CLASS + CLASS_FILE_EXTENSION;
+			tabPosision--;
 		}
 
 		//get the class name
@@ -156,15 +159,19 @@ public class Program {
 				previouslyPrinted = currentInstruction;
 				if (methodStack.contains(currentInstruction)) {
 					System.out.println(currentInstruction + "[recursive]");
+					Assignment2.totalMethods++;
 				} else if (isAbstractMethod) {
 					System.out.println(currentInstruction + "[abstract]");
+					Assignment2.totalMethods++;
 				} else {
 					if (currentInstruction.contains(BASE_PACKAGE)) {
 						System.out.println(getConstructorName(currentInstruction));
 						System.out.println("Object constructor()");
+						Assignment2.totalConstructors++;
 					} else {
 						if (!currentInstruction.contains(OBJECT_PACKAGE)) {
 							System.out.println(currentInstruction);
+							Assignment2.totalMethods++;
 						}
 					}
 				}
