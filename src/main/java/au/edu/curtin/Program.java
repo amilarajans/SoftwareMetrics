@@ -47,7 +47,9 @@ public class Program {
 	protected static boolean isMethod = false;
 	protected static boolean isFirstMethod = false;
 	protected static boolean isAbstractMethod = false;
+	protected static boolean isNextClass = false;
 	protected static String previouslyPrinted = "";
+	protected static String nextClass = "";
 	protected static HashMap<Character, String> map;
 	protected static List<String> methodStack;
 	protected static Stack<String> executionMethodStack;
@@ -104,6 +106,12 @@ public class Program {
 	}
 
 	protected static void processClassFile(String line) {
+
+		if (isNextClass) {
+			isNextClass = false;
+			new Program(BASE_PATH, nextClass, "", false);
+		}
+
 		//change the file name to parent class if it contains pop
 		if (line.contains(RETURN_TO_PARENT)) {
 			FILE_NAME = SUPER_CLASS + CLASS_FILE_EXTENSION;
@@ -151,17 +159,26 @@ public class Program {
 				} else if (isAbstractMethod) {
 					System.out.println(currentInstruction + "[abstract]");
 				} else {
-					if (currentInstruction.contains(OBJECT_PACKAGE)) {
-						System.out.println(currentInstruction.replace(OBJECT_PACKAGE, " constructor"));
+					if (currentInstruction.contains(BASE_PACKAGE)) {
+						System.out.println(getConstructorName(currentInstruction));
 						System.out.println("Object constructor()");
 					} else {
-						System.out.println(currentInstruction);
+						if (!currentInstruction.contains(OBJECT_PACKAGE)) {
+							System.out.println(currentInstruction);
+						}
 					}
 				}
 				methodStack.add(previouslyPrinted);
 			}
 		}
 
+	}
+
+	private static String getConstructorName(String currentInstruction) {
+		String[] constructorSplit = currentInstruction.split("\\.");
+		String constructorParams = constructorSplit[1].substring(constructorSplit[1].indexOf("("), constructorSplit[1].length());
+		String constructorClass = constructorSplit[1].replace(BASE_PACKAGE, "").replace(constructorParams, "");
+		return constructorClass + " constructor" + constructorParams;
 	}
 
 	private static String getMethodInstructions(String line, String currentInstruction) {
@@ -204,7 +221,8 @@ public class Program {
 			currentInstruction += matcher.group(2) + getReadableSignature(matcher.group(4).replaceAll(CONSTRUCTOR_PARAMS, ""));
 			// group 2 for fully qualified class name
 			if (matcher.group(2).contains(BASE_PACKAGE)) {
-				new Program(BASE_PATH, matcher.group(3) + CLASS_FILE_EXTENSION, "", false);
+				nextClass = matcher.group(3) + CLASS_FILE_EXTENSION;
+				isNextClass = true;
 			}
 			if (isConstructor && !isRunning) {
 				isRunning = true;
