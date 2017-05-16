@@ -16,7 +16,7 @@ public class Assignment2 {
 		if(args.length==0){
 			args = new String[3];
 			args[0] = "D:\\dev\\Projects\\SoftwareMetrics\\src\\main\\java\\au\\edu\\curtin\\";
-			args[1] = "A.class";
+			args[1] = "MissingFile.class";
 			args[2] = "";
 		}
 

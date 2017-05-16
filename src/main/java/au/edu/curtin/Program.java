@@ -47,6 +47,7 @@ public class Program {
 	protected static boolean isMethod = false;
 	protected static boolean isFirstMethod = false;
 	protected static boolean isAbstractMethod = false;
+	protected static boolean isMissingMethod = false;
 	protected static boolean isNextClass = false;
 	protected static String previouslyPrinted = "";
 	protected static String nextClass = "";
@@ -163,6 +164,9 @@ public class Program {
 				} else if (isAbstractMethod) {
 					System.out.println(currentInstruction + "[abstract]");
 					Assignment2.totalMethods++;
+				} else if (isMissingMethod) {
+					System.out.println(currentInstruction + "[missing]");
+					Assignment2.totalMethods++;
 				} else {
 					if (currentInstruction.contains(BASE_PACKAGE)) {
 						System.out.println(getConstructorName(currentInstruction));
@@ -199,13 +203,35 @@ public class Program {
 			String group = matcher.group(4);
 			if (group.startsWith(".")) {
 				String[] methodSplit = group.replace(".", "").split(":");
-				method = methodSplit[0] + getReadableSignature(methodSplit[1].replaceAll(METHOD_PARAMS, ""));
-				isAbstractMethod = true;
+				if (matcher.group(2).contains(BASE_PACKAGE)) {
+					method = methodSplit[0] + getReadableSignature(methodSplit[1].replaceAll(METHOD_PARAMS, ""));
+					isAbstractMethod = true;
+					isMissingMethod = false;
+				} else {
+					isAbstractMethod = false;
+					isMissingMethod = true;
+					String returnType;
+					String arguments;
+					if (methodSplit[1].indexOf("L") > 0) {
+						returnType = methodSplit[1].substring(methodSplit[1].indexOf("L"), methodSplit[1].length());
+						arguments = methodSplit[1].substring(0, methodSplit[1].indexOf("L"));
+					} else {
+						returnType = "";
+						arguments = methodSplit[1];
+					}
+
+					method = matcher.group(3) + "." + methodSplit[0] + getReadableSignature(arguments.replaceAll(METHOD_PARAMS, ""));// + getReadableSignature(returnType.replaceAll(METHOD_PARAMS, ""));
+				}
 			} else {
 				method = matcher.group(3) + getReadableSignature(group.replaceAll(METHOD_PARAMS, ""));
 				isAbstractMethod = false;
+				isMissingMethod = false;
 			}
-			currentInstruction += method;
+			if (!isMissingMethod) {
+				currentInstruction += method;
+			} else {
+				currentInstruction = method;
+			}
 		}
 		return currentInstruction;
 	}
