@@ -8,6 +8,8 @@
 it'll show the following out put
 
 ```
+A constructor()
+Object constructor()
 A.method1()
 	B constructor(long)
 	Object constructor()
@@ -20,7 +22,6 @@ A.method1()
 A.method2(int)
 A.method2(int, double)
 A.method3(String)
-
 Total number of classes involved    ---- 3
 Total number of unique constructors ---- 2
 Total number of unique methods      ---- 8

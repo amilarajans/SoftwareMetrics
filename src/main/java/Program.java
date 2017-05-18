@@ -1,4 +1,4 @@
-package au.edu.curtin;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -270,6 +270,8 @@ public class Program {
 			}
 			if (isConstructor && !isRunning) {
 				isRunning = true;
+				System.out.println(SUPER_CLASS + " constructor()");
+				System.out.println("Object constructor()");
 			}
 		}
 		return currentInstruction;
