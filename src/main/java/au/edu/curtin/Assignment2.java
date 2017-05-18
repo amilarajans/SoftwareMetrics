@@ -11,12 +11,13 @@ public class Assignment2 {
 	public static int totalConstructors = 0;
 	//starts with 1 because we define the initial class file
 	public static int totalClass = 1;
+	public static int tabPosition = 0;
 
 	public static void main(String[] args) {
 		if(args.length==0){
 			args = new String[3];
 			args[0] = "D:\\dev\\Projects\\SoftwareMetrics\\src\\main\\java\\au\\edu\\curtin\\";
-			args[1] = "MissingFile.class";
+			args[1] = "A.class";
 			args[2] = "";
 		}
 

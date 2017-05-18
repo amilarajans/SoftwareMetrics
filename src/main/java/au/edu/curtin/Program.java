@@ -54,7 +54,6 @@ public class Program {
 	protected static HashMap<Character, String> map;
 	protected static List<String> methodStack;
 	protected static Stack<String> executionMethodStack;
-	protected static int tabPosision = 0;
 
 	protected Program() {
 		//protected constructor to limit object creation
@@ -89,8 +88,6 @@ public class Program {
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
-
-		executionMethodStack.stream().forEach(System.out::println);
 	}
 
 	private void initializeByteCodeInstructions() {
@@ -118,7 +115,7 @@ public class Program {
 		//change the file name to parent class if it contains pop
 		if (line.contains(RETURN_TO_PARENT)) {
 			FILE_NAME = SUPER_CLASS + CLASS_FILE_EXTENSION;
-			tabPosision--;
+			Assignment2.tabPosition--;
 		}
 
 		//get the class name
@@ -126,6 +123,7 @@ public class Program {
 
 		if (isMethod) {
 			if (line.contains(CONSTRUCTORS_OR_SUPERCLASS_METHODS)) {
+
 				currentInstruction = getConstructorInstructions(line, currentInstruction);
 			} else if (line.contains(METHOD_NAME)) {
 				Pattern pattern = Pattern.compile(FIRST_METHOD_NAME_REGEX);
@@ -159,21 +157,27 @@ public class Program {
 			if (!currentInstruction.isEmpty() && !previouslyPrinted.equals(currentInstruction)) {
 				previouslyPrinted = currentInstruction;
 				if (methodStack.contains(currentInstruction)) {
+					putTabs();
 					System.out.println(currentInstruction + "[recursive]");
 					Assignment2.totalMethods++;
 				} else if (isAbstractMethod) {
+					putTabs();
 					System.out.println(currentInstruction + "[abstract]");
 					Assignment2.totalMethods++;
 				} else if (isMissingMethod) {
+					putTabs();
 					System.out.println(currentInstruction + "[missing]");
 					Assignment2.totalMethods++;
 				} else {
 					if (currentInstruction.contains(BASE_PACKAGE)) {
+						putTabs();
 						System.out.println(getConstructorName(currentInstruction));
+						putTabs();
 						System.out.println("Object constructor()");
 						Assignment2.totalConstructors++;
 					} else {
 						if (!currentInstruction.contains(OBJECT_PACKAGE)) {
+							putTabs();
 							System.out.println(currentInstruction);
 							Assignment2.totalMethods++;
 						}
@@ -183,6 +187,12 @@ public class Program {
 			}
 		}
 
+	}
+
+	private static void putTabs() {
+		for (int i = 0; i < Assignment2.tabPosition; i++) {
+			System.out.print('\t');
+		}
 	}
 
 	private static String getConstructorName(String currentInstruction) {
@@ -256,6 +266,7 @@ public class Program {
 			if (matcher.group(2).contains(BASE_PACKAGE)) {
 				nextClass = matcher.group(3) + CLASS_FILE_EXTENSION;
 				isNextClass = true;
+				Assignment2.tabPosition++;
 			}
 			if (isConstructor && !isRunning) {
 				isRunning = true;
