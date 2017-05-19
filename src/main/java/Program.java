@@ -116,6 +116,7 @@ public class Program {
 		if (line.contains(RETURN_TO_PARENT)) {
 			FILE_NAME = SUPER_CLASS + CLASS_FILE_EXTENSION;
 			Assignment2.tabPosition--;
+			Assignment2.tabPosition--;
 		}
 
 		//get the class name
@@ -172,6 +173,7 @@ public class Program {
 					if (currentInstruction.contains(BASE_PACKAGE)) {
 						putTabs();
 						System.out.println(getConstructorName(currentInstruction));
+						Assignment2.tabPosition++;
 						putTabs();
 						System.out.println("Object constructor()");
 						Assignment2.totalConstructors++;
@@ -271,7 +273,8 @@ public class Program {
 			if (isConstructor && !isRunning) {
 				isRunning = true;
 				System.out.println(SUPER_CLASS + " constructor()");
-				System.out.println("Object constructor()");
+				Assignment2.tabPosition++;
+				System.out.println("\tObject constructor()");
 			}
 		}
 		return currentInstruction;
